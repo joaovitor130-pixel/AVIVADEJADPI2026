@@ -205,11 +205,6 @@ textarea {
     transform: scale(1.1);
 }
 
-/* Ajuste específico para o Card Premium se quiser dar destaque */
-.card-premium .card-image-container {
-    border: 2px solid rgba(0, 255, 136, 0.3);
-}
-
 .card-title {
     font-size: 1.5rem;
     margin-bottom: 0.5rem;
