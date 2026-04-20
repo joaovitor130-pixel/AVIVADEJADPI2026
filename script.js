@@ -79,16 +79,17 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // FORMULÁRIO - WhatsApp
+    // FORMULÁRIO - Lógica de Redirecionamento (WhatsApp ou Mercado Pago)
     const form = document.getElementById('orderForm');
     if (form) {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // Captura dados
+            // Captura os valores no momento do envio
             const fullName = document.getElementById('fullName').value;
             const size = document.getElementById('size').value;
             const phone = document.getElementById('phone').value;
+            const paymentMethod = document.getElementById('paymentMethod').value; // Captura o método selecionado
             
             // Validação básica
             if (!fullName || !size || !phone || !selectedProduct) {
@@ -96,27 +97,42 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // Mensagem formatada para WhatsApp
-            const message = `🚀 *NOVO PEDIDO - AVIVA DEJADPI 2026*\n\n` +
-                `👤 *Nome:* ${fullName}\n` +
-                `📦 *Produto:* ${selectedProduct}\n` +
-                `👕 *Tamanho:* ${size}\n` +
-                `💰 *Valor:* R$ ${selectedPrice}\n` +
-                `📱 *Telefone:* ${phone}\n\n` +
-                `✅ *Confirmação do pedido!*`;
+            // MAPEAMENTO DOS SEUS LINKS DO MERCADO PAGO
+            const paymentLinks = {
+                'Camisa Simples': 'https://mpago.la/33AT6rH',
+                'Combo Camisa + Copo': 'https://mpago.la/2jyouei',
+                'Combo Completo': 'https://mpago.la/2ue3BST'
+            };
 
-            // Link do WhatsApp
-            const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+            // LOGICA DE REDIRECIONAMENTO
+            if (paymentMethod === 'Cartão de Crédito') {
+                const mpUrl = paymentLinks[selectedProduct.trim()]; // .trim() remove espaços extras
+                
+                if (mpUrl) {
+                    window.open(mpUrl, '_blank');
+                } else {
+                    alert('Erro: Link de pagamento não encontrado para: ' + selectedProduct);
+                }
+            } else {
+                // Mensagem formatada para WhatsApp (Pix, Débito ou Espécie)
+                const message = `🚀 *NOVO PEDIDO - AVIVA DEJADPI 2026*\n\n` +
+                    `👤 *Nome:* ${fullName}\n` +
+                    `📦 *Produto:* ${selectedProduct}\n` +
+                    `👕 *Tamanho:* ${size}\n` +
+                    `💰 *Valor:* R$ ${selectedPrice}\n` +
+                    `💳 *Pagamento:* ${paymentMethod}\n` +
+                    `📱 *Telefone:* ${phone}\n\n` +
+                    `✅ *Confirmação do pedido!*`;
+
+                const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+                window.open(whatsappUrl, '_blank');
+            }
             
-            // Redireciona
-            window.open(whatsappUrl, '_blank');
-            
-            // Reset form
+            // Limpa o formulário após o envio
             form.reset();
-            document.getElementById('selectedProduct').value = '';
-            document.getElementById('selectedPrice').value = '';
-            
-            console.log('Pedido enviado para WhatsApp!');
+            const productSummary = document.getElementById('productSummary');
+            productSummary.innerHTML = '👆 Clique em uma oferta acima para selecionar';
+            productSummary.classList.remove('active');
         });
     }
 });
